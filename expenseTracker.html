@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+    <style>
+        body{
+            margin: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Track your Expense</h1>
+    <form id="thisform">
+        <label for="amount">Choose expense amount: </label><br>
+        <input type="text" id="amount" required><br><br>
+        
+        <label for="description">Add description: </label><br>
+        <input type="text" id="description" required><br><br>
+        
+        <label for="category">Choose a category: </label>
+        <select id="category" name="category">
+            <option value="movie">Movie</option>
+            <option value="electricity">Electricity</option>
+            <option value="food">Food</option>
+            <option value="fuel">Fuel</option>
+        </select>
+        <br><br>
+        
+        <input type="submit" value="Add Expense">
+
+        <ul id="thisList">
+
+        </ul>
+
+    </form>
+
+
+    <script>
+        var form = document.getElementById('thisform');
+var list = document.getElementById('thisList');
+
+form.addEventListener('submit', addToList);
+
+function addToList(e){
+    e.preventDefault()
+
+    var amount = document.getElementById('amount').value
+    var description = document.getElementById('description').value
+    var category = document.getElementById('category').value
+    
+    var li = document.createElement('li')
+    li.appendChild(document.createTextNode(amount+' - '+category+' - '+description))
+
+    var del = document.createElement('button')
+    del.textContent = 'Delete Expense'
+    li.appendChild(del)
+
+    del.onclick = () => {
+        localStorage.removeItem(amount)
+        list.removeChild(li)
+    }
+
+    var edit = document.createElement('button')
+    edit.textContent='Edit Expense'
+    li.appendChild(edit)
+
+    edit.onclick = () => {
+        localStorage.removeItem(amount)
+        list.removeChild(li)
+        document.getElementById('amount').value = myList['userAmount']
+        document.getElementById('description').value = myList['userDescription']
+        document.getElementById('category').value = myList['userCategory']
+    }
+
+    let myList = {
+        userAmount : amount,
+        userDescription : description,
+        userCategory : category
+    };
+    
+    localStorage.setItem(amount, JSON.stringify(myList))
+
+    list.appendChild(li)
+
+    form.reset();
+   
+}
+    </script>
+</body>
+</html>
+
