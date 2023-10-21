@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        console.log('person 1: shows ticket')
+        console.log('person 2: shows ticket')
+
+        const preMovie = async () => {
+            const bringingTickets = new Promise((resolve, reject) => {
+                setTimeout(() => resolve('ticket'), 3000)
+            })
+
+            const getPopcorn = new Promise((resolve,reject) => resolve('popcorn bought'))
+            const getbutter = new Promise((resolve,reject) => resolve('butter added'))
+            const getCoolDrinks = new Promise((resolve, reject) => resolve('bought cool drinks'))
+
+            let ticket = await bringingTickets
+            let doneTasks = await Promise.all([getPopcorn, getbutter, getCoolDrinks])
+            console.log(doneTasks)
+            
+            return ticket
+        }
+
+        preMovie().then((m) => console.log(`shows ${m}`))
+
+        console.log('person 4: shows ticket')
+        console.log('person 5: shows ticket')
+
+    </script>
+</body>
+</html>
