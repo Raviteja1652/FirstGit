@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Form</title>
+    <style>
+        body{
+            margin: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Seller's Admin Page</h1>
+
+    <form id="thisForm">
+        <label for="price">Price of Product: </label>
+        <input type="number" id="price" name="price"><br><br>
+        <label for="name">Name of the Product: </label>
+        <input type="text" id="name" name="name"><br><br>
+        <button>Submit</button>
+    </form>
+
+    <h2>Products</h2>
+    
+    <ul id="thisList"></ul>
+    
+    <h4 id="totalValue">Total Value Worth of Products: </h4>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
+    <script>
+        var form = document.getElementById('thisForm');
+        var list = document.getElementById('thisList');
+        
+        let totalSum = 0;
+
+        function updateTotalSum(){
+            const totalValue = document.getElementById('totalValue')
+            totalValue.textContent = `Total Value Worth of Products: ${totalSum}`
+        };
+
+        form.addEventListener('submit', addProduct)
+
+        function showProducts(param, itemId){
+            var li = document.createElement('li')
+            li.appendChild(document.createTextNode(`${param.productPrice} : ${param.productName}`))
+
+            var del = document.createElement('button')
+            del.textContent = 'Delete'
+            del.dataset.id = itemId
+            li.appendChild(del);
+            list.appendChild(li)
+
+            del.onclick = () => {
+                const ItemId = del.dataset.id
+                list.removeChild(li)
+                axios.delete(`https://crudcrud.com/api/aa92ec5421fe4b809622bc90b36dc2e4/productDetails/${ItemId}`)
+                    .then((res) => console.log(res.data))
+                    .catch((err) => console.log(err))
+                totalSum -= parseFloat(param.productPrice);
+                updateTotalSum();
+            }
+            totalSum += parseFloat(param.productPrice);
+            updateTotalSum();
+        }
+
+        function addProduct(e){
+            e.preventDefault()
+            var price = document.getElementById('price').value
+            var product = document.getElementById('name').value
+            let myObj = {
+                productPrice : price,
+                productName : product
+            };
+            axios.post('https://crudcrud.com/api/aa92ec5421fe4b809622bc90b36dc2e4/productDetails', myObj)
+                .then((res) => {
+                    console.log(res.data)
+                    showProducts(myObj, res.data._id)
+                })
+                .catch((err) => console.log(err))
+            form.reset()
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            axios.get('https://crudcrud.com/api/aa92ec5421fe4b809622bc90b36dc2e4/productDetails')
+                .then((res) => {
+                    console.log(res.data)
+                    res.data.forEach((item) => showProducts(item, item._id))
+                })
+                .catch((err) => console.log(err))
+        });
+
+    </script>
+    
+</body>
+</html>
