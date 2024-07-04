@@ -1,0 +1,80 @@
+const form = document.getElementById('form');
+const list = document.getElementById('list');
+
+form.addEventListener('submit', addProduct)
+
+let totalSum = 0;
+
+function total() {
+    const su_m = document.getElementById('sum');
+    su_m.textContent = `Total Amount : ${totalSum}`;
+}
+
+async function addProduct(e) {
+    e.preventDefault()
+    const amount = document.getElementById('amount').value;
+    const product = document.getElementById('product').value;
+
+    const myObj = {
+        amount: amount,
+        product: product
+    }
+
+    // axios.post('https://crudcrud.com/api/7d04609ecd8e4fc6a87f56257144aad9/productData', myObj)
+    //     .then(res => {
+    //         console.log(res.data)
+    //         showProducts(res.data)
+    //     })
+    //     .catch(err => console.log(err))
+    try {
+        const response = await axios.post('https://crudcrud.com/api/e069f544afc94e17963730b1779d0337/productData', myObj);
+        const data = await response.data;
+        showProducts(data);
+        console.log(data);
+    } catch (error) {
+        console.log(error)
+    };
+
+    form.reset()
+};
+
+function showProducts(obj) {
+    const li = document.createElement('li');
+    li.appendChild(document.createTextNode(`${obj.amount} : ${obj.product}`));
+
+    const del = document.createElement('button');
+    del.textContent = 'Delete';
+
+    li.appendChild(del)
+
+    del.onclick = async() => {
+        list.removeChild(li)
+        try {
+            const response = await axios.delete(`https://crudcrud.com/api/e069f544afc94e17963730b1779d0337/productData/${obj._id}`)
+            const data = await response.data;
+            console.log(data)
+        } catch (error) {
+            console.log(error)
+        }
+                
+        totalSum -= parseFloat(obj.amount);
+        total()
+    };
+
+    list.appendChild(li);
+
+    totalSum += parseFloat(obj.amount);
+    total()
+};
+
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const response = await axios.get('https://crudcrud.com/api/e069f544afc94e17963730b1779d0337/productData');
+        const data = await response.data;
+        data.forEach(pro => showProducts(pro))
+        console.log(data)
+    } catch (error) {
+        console.log(error)
+    };
+})
+
